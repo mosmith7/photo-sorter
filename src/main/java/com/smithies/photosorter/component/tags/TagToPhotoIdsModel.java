@@ -6,33 +6,38 @@ import java.util.UUID;
 
 public class TagToPhotoIdsModel {
 
-	private String tag;
-	
-	private Set<UUID> photoIds;
-	
-	public TagToPhotoIdsModel() {
-		this.tag = "";
-		this.photoIds = new HashSet<>();
-	}
-	
-	public TagToPhotoIdsModel(String tag) {
-		this.tag = tag;
-		this.photoIds = new HashSet<>();
-	}
+  private String tag;
 
-	public String getTag() {
-		return tag;
-	}
+  private Set<UUID> photoIds;
 
-	public void setTag(String tag) {
-		this.tag = tag;
-	}
+  public TagToPhotoIdsModel() {
+    this.tag = "";
+    this.photoIds = new HashSet<>();
+  }
 
-	public Set<UUID> getPhotoIds() {
-		return photoIds;
-	}
+  public TagToPhotoIdsModel(String tag) {
+    this.tag = tag;
+    this.photoIds = new HashSet<>();
+  }
 
-	public void setPhotoIds(Set<UUID> photoIds) {
-		this.photoIds = photoIds;
-	}
+  public TagToPhotoIdsModel(String tag, Set<UUID> photoIds) {
+    this.tag = tag;
+    this.photoIds = photoIds;
+  }
+
+  public String getTag() {
+    return tag;
+  }
+
+  public void setTag(String tag) {
+    this.tag = tag;
+  }
+
+  public Set<UUID> getPhotoIds() {
+    return photoIds;
+  }
+
+  public void setPhotoIds(Set<UUID> photoIds) {
+    this.photoIds = photoIds;
+  }
 }

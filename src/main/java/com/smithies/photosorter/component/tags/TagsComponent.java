@@ -5,14 +5,12 @@ import java.util.UUID;
 
 public interface TagsComponent {
 
-	void savePhotoTags(PhotoTagsModel model);
+  PhotoTagsModel getPhotoTags(UUID photoId);
 
-	PhotoTagsModel getPhotoTags(UUID photoId);
+  Set<String> getAllTags();
 
-	Set<String> getAllTags();
+  void addPhotoTag(AddOrRemovePhotoTagRequest request);
 
-	Set<String> addTag(String tag);
-
-	void addPhotoTag(AddOrRemovePhotoTagRequest request);
+  TagToPhotoIdsModel getIdsForTag(String tag);
 
 }

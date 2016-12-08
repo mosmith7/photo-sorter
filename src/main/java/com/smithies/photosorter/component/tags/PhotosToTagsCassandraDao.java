@@ -2,76 +2,73 @@ package com.smithies.photosorter.component.tags;
 
 import static com.datastax.driver.core.querybuilder.QueryBuilder.eq;
 
-import java.util.Optional;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cassandra.core.RowMapper;
 import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.stereotype.Component;
 
+import com.datastax.driver.core.Row;
 import com.datastax.driver.core.SimpleStatement;
+import com.datastax.driver.core.querybuilder.Delete;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Select;
-import com.smithies.cassandra.common.CqlCommonFunctions;
-import com.smithies.jackson.common.FasterObjectMapper;
 
 @Component
 class PhotosToTagsCassandraDao {
 
-	 private static final String KS = "photosorter";
+  Logger log = LoggerFactory.getLogger(this.getClass());
 
-	 private static final String TAGS_TO_PHOTOS_TABLE = "photos_to_tags";
+  // Keyspace and table
+  private static final String KS = "photosorter";
+  private static final String PHOTOS_TO_TAGS_TABLE = "photos_to_tags";
+  private static final String PHOTO_TO_TAGS = KS + "." + PHOTOS_TO_TAGS_TABLE;
 
-	 private static final String PHOTO_TO_TAGS = KS + "." + TAGS_TO_PHOTOS_TABLE;
+  // Schema
+  private static final String PHOTO_ID = "photoId";
+  private static final String TAG = "tag";
+  private static final String PARTITION_KEY = PHOTO_ID;
 
-	 private static final String CQL_CREATE = String.format("CREATE TABLE IF NOT EXISTS %s (id uuid, photoTags text, PRIMARY KEY(id))",PHOTO_TO_TAGS);
+  // SQL statements
+  private static final String CQL_CREATE =
+      String.format("CREATE TABLE IF NOT EXISTS %s (%s uuid, %s text, PRIMARY KEY(%s))",
+          PHOTO_TO_TAGS, PHOTO_ID, TAG, PARTITION_KEY);
+  private static final String INSERT_CQL =
+      String.format("INSERT INTO %s (%s, %s) VALUES (?, ?)", PHOTO_TO_TAGS, PHOTO_ID, TAG);
 
-	 private static final String INSERT_CQL = String.format("INSERT INTO %s (id, photoTags) VALUES (?, ?)", PHOTO_TO_TAGS);
-	  
-	 private CassandraOperations cassandra;
+  private CassandraOperations cassandra;
 
-	 private final FasterObjectMapper mapper;
+  @Autowired
+  public void setCassandra(CassandraOperations cassandra) {
+    this.cassandra = cassandra;
+    cassandra.execute(CQL_CREATE);
+  }
 
-	 private final RowMapper<PhotoTagsModel> rowMap;
+  public PhotoTagsModel addPhotoTag(AddOrRemovePhotoTagRequest request) {
+    cassandra.execute(new SimpleStatement(INSERT_CQL, request.getPhotoId(), request.getTag()));
+    return get(request.getPhotoId());
+  }
 
-	 /**
-	  * @param mapper the mapper that will be used in serialising PhotoTagsModel
-	  */
-	 @Autowired
-	 public PhotosToTagsCassandraDao(FasterObjectMapper mapper) {
-	   this.mapper = mapper;
-	   this.rowMap = CqlCommonFunctions.mapperFor(mapper, "photoTags", PhotoTagsModel.class);
-	 }
+  public PhotoTagsModel removePhotoTag(AddOrRemovePhotoTagRequest request) {
+    Delete delete = QueryBuilder.delete().from(KS, PHOTOS_TO_TAGS_TABLE);
+    delete.where(eq(PHOTO_ID, request.getPhotoId())).and(eq(TAG, request.getTag()));
+    cassandra.execute(delete);
+    return get(request.getPhotoId());
+  }
 
-	 @Autowired
-	 public void setCassandra(CassandraOperations cassandra) {
-	   this.cassandra = cassandra;
-	   cassandra.execute(CQL_CREATE);
-	 }
-	 
-	 public void savePhotoTags(PhotoTagsModel model) {
-		final String json = mapper.marshall(model);
-		cassandra.execute(new SimpleStatement(INSERT_CQL, model.getPhotoId(), json));
-	 }
-	 
-	 public void addPhotoTag(AddOrRemovePhotoTagRequest request) {
-		 PhotoTagsModel photoTags = get(request.getPhotoId()).orElse(new PhotoTagsModel(request.getPhotoId()));
-		 photoTags.getTags().add(request.getTag());
-		 final String json = mapper.marshall(photoTags);
-		 cassandra.execute(new SimpleStatement(INSERT_CQL, photoTags.getPhotoId(), json));
-	}
-	 
-	 public void removePhotoTag(AddOrRemovePhotoTagRequest request) {
-		 PhotoTagsModel photoTags = get(request.getPhotoId()).orElse(new PhotoTagsModel());
-		 photoTags.getTags().remove(request.getTag());
-		 final String json = mapper.marshall(photoTags);
-		 cassandra.execute(new SimpleStatement(INSERT_CQL, photoTags.getPhotoId(), json));
-	}
-
-	 public Optional<PhotoTagsModel> get(UUID id) {
-		 Select select = QueryBuilder.select().all().from(TAGS_TO_PHOTOS_TABLE);
-			select.where(eq("id", id));
-		 return CqlCommonFunctions.getOptional(cassandra, rowMap, select);
-	 }
+  public PhotoTagsModel get(UUID id) {
+    Select select = QueryBuilder.select().all().from(PHOTOS_TO_TAGS_TABLE);
+    select.where(eq(PHOTO_ID, id));
+    List<Row> rows = cassandra.query(select).all();
+    Set<String> tags = new HashSet<>();
+    rows.forEach(row -> {
+      tags.add(row.getString(TAG));
+    });
+    return new PhotoTagsModel(id, tags);
+  }
 }
