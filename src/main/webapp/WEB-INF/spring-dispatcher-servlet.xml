@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+This contains all the information that the front controller needs to manage the information
+For controller using annotations. Need to change web.xml to reference this file.
+!-->
+
+ <!--
+ The xmlns:context and http*context lines are required to use annotations i.e. @Controller
+ Also if using @Controller the HandlerMapping line is not required.
+ !-->
+ <beans xmlns="http://www.springframework.org/schema/beans"
+ 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ 		xmlns:context="http://www.springframework.org/schema/context" 
+ 		xmlns:mvc="http://www.springframework.org/schema/mvc"
+ 		xsi:schemaLocation="http://www.springframework.org/schema/beans
+ 		http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+ 		http://www.springframework.org/schema/context
+ 		http://www.springframework.org/schema/context/spring-context-3.0.xsd
+ 		http://www.springframework.org/schema/mvc
+ 		http://www.springframework.org/schema/mvc/spring-mvc.xsd"> 
+ 	
+ 	<!--
+	Using annotations on the controller requires this line to be added to scan over all components to find controller
+	 !-->	
+<context:component-scan base-package="com.smithies.photosorter.controller"/>
+	 <mvc:annotation-driven/>
+	 
+	 <!--
+	 Tells front controller which view resolver to use
+	 Looks for prefix/viewNameProvidedByController suffixValue e.g. /WEB-INF/HelloPage.jsp
+ 	!-->
+ 	<bean id="viewResolver"
+ 			class="org.springframework.web.servlet.view.InternalResourceViewResolver" >
+ 			<property name="prefix">
+ 				<value>/WEB-INF/</value>
+ 			</property>
+ 			<property name="suffix">
+ 				<value>.jsp</value>
+ 			</property>
+ 	</bean>
+	 
+	 
+	  </beans>

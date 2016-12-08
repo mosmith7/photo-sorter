@@ -1,0 +1,5 @@
+folder:
+  main: C:/PhotoSorter
+  input: C:/PhotoSorter/Input
+  sorted: C:/PhotoSorter/Sorted
+  repo: C:/PhotoSorter/Repository
