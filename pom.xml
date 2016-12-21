@@ -63,7 +63,21 @@
     <artifactId>jstl</artifactId>
 </dependency>
 
-
+<!-- Elastic Search 09 -->
+		<dependency>
+			<groupId>org.elasticsearch</groupId>
+			<artifactId>elasticsearch</artifactId>
+			<version>0.90.13</version>
+		</dependency>
+		
+		<!-- Redis -->
+		<!-- https://mvnrepository.com/artifact/redis.clients/jedis -->
+	<dependency>
+    	<groupId>redis.clients</groupId>
+    	<artifactId>jedis</artifactId>
+    	<version>2.2.1</version>
+	</dependency>
+		
 <!-- Cassandra Dependencies -->
 	<dependency>
             <groupId>org.springframework.data</groupId>
@@ -78,11 +92,6 @@
 		<dependency>
          <groupId>org.slf4j</groupId>
          <artifactId>slf4j-api</artifactId>
-      </dependency>
- 
-      <dependency>
-         <groupId>com.datastax.cassandra</groupId>
-         <artifactId>cassandra-driver-core</artifactId>
       </dependency>
  
       <dependency>
@@ -112,6 +121,12 @@
     <groupId>com.fasterxml</groupId>
     <artifactId>jackson-xml-databind</artifactId>
     <version>0.6.2</version>
+</dependency>
+      
+<dependency>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-lang3</artifactId>
+    <version>3.0</version>
 </dependency>
       
       

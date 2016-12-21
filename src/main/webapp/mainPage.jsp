@@ -16,14 +16,9 @@
 	<form action = "next" method="get">
 		<input type="submit" value="Get next photo" /> 
 	</form>
-	<form action = "/api/tags/add" method="post">
-	Add new Tag: <input type="text" name="tag"><br>
-		<input type="submit" value="Add Tag" /> 
-	</form>
 	
-	<form action = "/api/tags/image/add" method="post" name="addImageToTagForm">
-	Add new Tag to photo: <input type="text" name="tag"><br>
-	<input type="text" name="photoLocation" value="blah">
+	<form action = "/api/photo-sorter/tags/image/add" method="post" name="addImageToTagForm">
+	Add new Tag to photo: <input type="text" name="photoLocation" value="blah">
 		<input type="submit" value="Add Tag" onclick="addTagToImage()" /> 
 	</form>
 	
@@ -31,7 +26,7 @@
 	function addTagToImage() {
 		var formData = JSON.stringify($("#addImageToTagForm").serializeArray());
 		$.ajax({
-	        url: 'http://localhost:8080/api/tags/image/add',
+	        url: 'http://localhost:9000/api/tags/image/add',
 	        type: 'POST',
 	        data: formData,
 	        success: function(){},

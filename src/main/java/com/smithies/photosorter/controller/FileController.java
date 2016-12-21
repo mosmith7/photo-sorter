@@ -9,21 +9,21 @@ import org.springframework.web.servlet.ModelAndView;
 import com.smithies.photosorter.component.filemanager.FileManagerComponent;
 
 @Controller
-@RequestMapping("/api/filemanager")
+@RequestMapping("/filemanager")
 public class FileController {
 
-	@Autowired
-	private FileManagerComponent fileManager;
-	
-	@RequestMapping(method = RequestMethod.GET, value = "create")
-	public String create() {
-		fileManager.createMainFolders();
-		return "test";
-	}
-	
-	@RequestMapping("/test")
-	public ModelAndView test() {
-		ModelAndView modelAndView = new ModelAndView("index");
-		return modelAndView;
-	}
+  @Autowired
+  private FileManagerComponent fileManager;
+
+  @RequestMapping(method = RequestMethod.GET, value = "create")
+  public String create() {
+    fileManager.createMainFolders();
+    return "test";
+  }
+
+  @RequestMapping("/test")
+  public ModelAndView test() {
+    ModelAndView modelAndView = new ModelAndView("index");
+    return modelAndView;
+  }
 }

@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.SimpleStatement;
-import com.datastax.driver.core.querybuilder.Delete;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Select;
 
@@ -37,7 +36,7 @@ public class TagsToPhotosCassandraDao {
 
   // SQL statements
   private static final String CQL_CREATE =
-      String.format("CREATE TABLE IF NOT EXISTS %s (%s text, %s text, PRIMARY KEY(%s))",
+      String.format("CREATE TABLE IF NOT EXISTS %s (%s text, %s uuid, PRIMARY KEY(%s))",
           TAGS_TO_PHOTOS, TAG, PHOTO_ID, PARTITION_KEY);
   private static final String INSERT_CQL =
       String.format("INSERT INTO %s (%s, %s) VALUES (?, ?)", TAGS_TO_PHOTOS, TAG, PHOTO_ID);
@@ -55,12 +54,12 @@ public class TagsToPhotosCassandraDao {
     return get(request.getTag());
   }
 
-  public TagToPhotoIdsModel remove(final AddOrRemovePhotoTagRequest request) {
-    Delete delete = QueryBuilder.delete().from(KS, TAGS_TO_PHOTOS_TABLE);
-    delete.where(eq(TAG, request.getTag())).and(eq(PHOTO_ID, request.getPhotoId()));
-    cassandra.execute(delete);
-    return get(request.getTag());
-  }
+  // public TagToPhotoIdsModel remove(final AddOrRemovePhotoTagRequest request) {
+  // Delete delete = QueryBuilder.delete().from(KS, TAGS_TO_PHOTOS_TABLE);
+  // delete.where(eq(TAG, request.getTag())).and(eq(PHOTO_ID, request.getPhotoId()));
+  // cassandra.execute(delete);
+  // return get(request.getTag());
+  // }
 
   public TagToPhotoIdsModel get(String tag) {
     Select select = QueryBuilder.select().all().from(TAGS_TO_PHOTOS_TABLE);

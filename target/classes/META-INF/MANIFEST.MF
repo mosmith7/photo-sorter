@@ -3,7 +3,7 @@ Implementation-Title: Photo Sorter
 Implementation-Version: 0.0.1
 Built-By: Mark
 Implementation-Vendor-Id: com.smithies
-Build-Jdk: 1.8.0_101
+Build-Jdk: 1.8.0_111
 Implementation-URL: http://projects.spring.io/spring-boot/photo-sorter
  /
 Created-By: Maven Integration for Eclipse

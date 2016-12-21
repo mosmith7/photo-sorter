@@ -49,6 +49,14 @@ class PhotosToTagsCassandraDao {
     cassandra.execute(CQL_CREATE);
   }
 
+  // @Autowired
+  // public void setCassandra() {
+  // Cluster cluster = Cluster.builder().addContactPoint("localhost").withPort(9042).build();
+  // Session session = cluster.connect();
+  // cassandra = new CassandraTemplate(session);
+  // cassandra.execute(CQL_CREATE);
+  // }
+
   public PhotoTagsModel addPhotoTag(AddOrRemovePhotoTagRequest request) {
     cassandra.execute(new SimpleStatement(INSERT_CQL, request.getPhotoId(), request.getTag()));
     return get(request.getPhotoId());

@@ -19,77 +19,80 @@ import com.smithies.photosorter.component.sorter.PhotosToSort;
 import com.smithies.photosorter.model.RenamePhotoRequest;
 
 @Controller
-@RequestMapping("/api/sorter")
+@RequestMapping("sorter")
 public class SorterController {
 
-	Logger log = LoggerFactory.getLogger(this.getClass());
-	
-	@Autowired
-	private Environment env;
-	
-	@Autowired
-	private PhotoSorterComponent sorter;
-	
-	private PhotosToSort photosToSort;
-	
-	// Get all photos
-	@RequestMapping(method = RequestMethod.GET, value = "getAll")
-	public ModelAndView getAll() {
-		// Get next photo
-		photosToSort = sorter.getImageFilename(env.getProperty(FileManagerComponent.FOLDER_INPUT), FileManagerComponent.EXTENSIONS);
-		
-		return getMainPage();
-	}
+  Logger log = LoggerFactory.getLogger(this.getClass());
 
-	// Endpoint to view next photo to be sorted
-	@RequestMapping(method = RequestMethod.GET, value = "next")
-	@ResponseBody
-	public ModelAndView getNext() {
-		// Get next photo
-		if (photosToSort.getPhotoNames().isEmpty()) {
-			log.error("Photos need to be loaded.");
-		}
-		if (photosToSort.getIndex().get()<photosToSort.getPhotoNames().size() - 1) {
-			photosToSort.next();
-		}
-		
-		return getMainPage();
-	}
-	
-	@RequestMapping(method = RequestMethod.GET, value = "previous")
-	@ResponseBody
-	public ModelAndView getPrevious() {
-		// Get next photo
-		if (photosToSort.getPhotoNames().isEmpty()) {
-			log.error("Photos need to be loaded.");
-		}
-		if (photosToSort.getIndex().get()!=0) {
-			photosToSort.previous();
-		}
-		
-		return getMainPage();
-	}
-	
-	@RequestMapping(method = RequestMethod.POST, value = "rename")
-	public UUID renameAndMove(@RequestBody RenamePhotoRequest request) {
-		if (request.getPhotoLocation().contains(env.getProperty(FileManagerComponent.FOLDER_INPUT))) {
-			UUID id = UUID.randomUUID();
-			sorter.renameWithId(request.getPhotoLocation(), id);
-			return id;
-		}
-		throw new RuntimeException();
-	}
-	
-	private ModelAndView getMainPage() {
-		// jsp and html files in webapp folder can automatically be seen. Files in WEB-INF can't.
-		// I can't get the prefix and suffix to work in spring-dispatcher-servlet.xml so atm not putting files under WEB-INF
-		ModelAndView modelAndView = new ModelAndView("/mainPage.jsp"); // view name 
-		String filename = env.getProperty(FileManagerComponent.FOLDER_INPUT) + "/" + photosToSort.getCurrentPhotoName();
-		String base64 = sorter.convertToBase64(filename);
-				
-		modelAndView.addObject("location", filename);
-		modelAndView.addObject("base64", base64);
-				
-		return modelAndView;
-	}
+  @Autowired
+  private Environment env;
+
+  @Autowired
+  private PhotoSorterComponent sorter;
+
+  private PhotosToSort photosToSort;
+
+  // Get all photos
+  @RequestMapping(method = RequestMethod.GET, value = "getAll")
+  public ModelAndView getAll() {
+    // Get next photo
+    photosToSort = sorter.getImageFilename(env.getProperty(FileManagerComponent.FOLDER_INPUT),
+        FileManagerComponent.EXTENSIONS);
+
+    return getMainPage();
+  }
+
+  // Endpoint to view next photo to be sorted
+  @RequestMapping(method = RequestMethod.GET, value = "next")
+  @ResponseBody
+  public ModelAndView getNext() {
+    // Get next photo
+    if (photosToSort.getPhotoNames().isEmpty()) {
+      log.error("Photos need to be loaded.");
+    }
+    if (photosToSort.getIndex().get() < photosToSort.getPhotoNames().size() - 1) {
+      photosToSort.next();
+    }
+
+    return getMainPage();
+  }
+
+  @RequestMapping(method = RequestMethod.GET, value = "previous")
+  @ResponseBody
+  public ModelAndView getPrevious() {
+    // Get next photo
+    if (photosToSort.getPhotoNames().isEmpty()) {
+      log.error("Photos need to be loaded.");
+    }
+    if (photosToSort.getIndex().get() != 0) {
+      photosToSort.previous();
+    }
+
+    return getMainPage();
+  }
+
+  @RequestMapping(method = RequestMethod.POST, value = "rename")
+  public UUID renameAndMove(@RequestBody RenamePhotoRequest request) {
+    if (request.getPhotoLocation().contains(env.getProperty(FileManagerComponent.FOLDER_INPUT))) {
+      UUID id = UUID.randomUUID();
+      sorter.renameWithId(request.getPhotoLocation(), id);
+      return id;
+    }
+    throw new RuntimeException();
+  }
+
+  private ModelAndView getMainPage() {
+    // jsp and html files in webapp folder can automatically be seen. Files in WEB-INF can't.
+    // I can't get the prefix and suffix to work in spring-dispatcher-servlet.xml so atm not putting
+    // files under WEB-INF
+    ModelAndView modelAndView = new ModelAndView("/mainPage.jsp"); // view name
+    String filename = env.getProperty(FileManagerComponent.FOLDER_INPUT) + "/"
+        + photosToSort.getCurrentPhotoName();
+    String base64 = sorter.convertToBase64(filename);
+
+    modelAndView.addObject("location", filename);
+    modelAndView.addObject("base64", base64);
+
+    return modelAndView;
+  }
 }

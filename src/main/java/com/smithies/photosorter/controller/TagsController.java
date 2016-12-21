@@ -17,7 +17,7 @@ import com.smithies.photosorter.model.RenamePhotoRequest;
 import com.smithies.photosorter.model.TagPhotoRequest;
 
 @RestController
-@RequestMapping("/api/tags")
+@RequestMapping("/tags")
 public class TagsController {
 
   @Autowired
@@ -40,6 +40,7 @@ public class TagsController {
   public void addTagsToImage(@RequestBody TagPhotoRequest request) {
     RenamePhotoRequest renameRequest = new RenamePhotoRequest();
     renameRequest.setPhotoLocation(request.getPhotoLocation());
+    // TODO: check if file exists at location. If not - error
     // rename and move photo if it is in input folder i.e. hasn't been given UUID or tags
     UUID id = sorterController.renameAndMove(renameRequest);
     AddOrRemovePhotoTagRequest addRequest = new AddOrRemovePhotoTagRequest();
